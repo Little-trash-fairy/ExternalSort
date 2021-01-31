@@ -1,96 +1,96 @@
-// Директива игнорирования устаревания
+// Р”РёСЂРµРєС‚РёРІР° РёРіРЅРѕСЂРёСЂРѕРІР°РЅРёСЏ СѓСЃС‚Р°СЂРµРІР°РЅРёСЏ
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-//Вычисление длинны массива
+//Р’С‹С‡РёСЃР»РµРЅРёРµ РґР»РёРЅРЅС‹ РјР°СЃСЃРёРІР°
 #define LEN(x)  (sizeof(x) / sizeof((x)[0]))
 
-//Шаблонные данные для временных файлов
+//РЁР°Р±Р»РѕРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РґР»СЏ РІСЂРµРјРµРЅРЅС‹С… С„Р°Р№Р»РѕРІ
 #define TemplateFileName "_sort%03d.dat"
-//Максимальная длинна имени
+//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅРЅР° РёРјРµРЅРё
 #define LengthName 13
 
-//Объявление оператор сравнения
+//РћР±СЉСЏРІР»РµРЅРёРµ РѕРїРµСЂР°С‚РѕСЂ СЃСЂР°РІРЅРµРЅРёСЏ
 #define cmpLow(x,y) (x < y)
 #define cmpGreater(x,y) (x > y)
 
-//Количество записей
+//РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїРёСЃРµР№
 #define CountElem 100
-// Структуры данных для хранения ключа
+// РЎС‚СЂСѓРєС‚СѓСЂС‹ РґР°РЅРЅС‹С… РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РєР»СЋС‡Р°
 typedef long int keyType;
-//Структура данных для хранения элементов
+//РЎС‚СЂСѓРєС‚СѓСЂР° РґР°РЅРЅС‹С… РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ
 typedef struct recTypeTag {
-    keyType key;                                  // Ключевое значение
+    keyType key;                                  // РљР»СЋС‡РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ
 #if CountElem
-    char data[CountElem - sizeof(keyType)];       // Поле значений
+    char data[CountElem - sizeof(keyType)];       // РџРѕР»Рµ Р·РЅР°С‡РµРЅРёР№
 #endif
 } recType;
 
-//Реализация bool
+//Р РµР°Р»РёР·Р°С†РёСЏ bool
 typedef enum {
     false,
     true
 } boolean;
 
-//Вспомогательная структура данных, предназначенная для хранения информации о файле
+//Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° РґР°РЅРЅС‹С…, РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅРЅР°СЏ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё Рѕ С„Р°Р№Р»Рµ
 typedef struct tmpFileTag {
-    FILE* FileElem;                 // Файл
-    char FileName[LengthName];      // Имя файла
-    recType rec;                    // Последняя запись, которая была прочитана
-    int dummy;                      // Количество холостых проходов
-    boolean FlagEndFile;            // Флаг конца файла
-    boolean FlagEndRun;             // Флаг конца прохода
-    boolean valid;                  // Пригодность записи
-    int Fibonacci;                        // Идеальное число Фибоначчи
+    FILE* FileElem;                 // Р¤Р°Р№Р»
+    char FileName[LengthName];      // РРјСЏ С„Р°Р№Р»Р°
+    recType rec;                    // РџРѕСЃР»РµРґРЅСЏСЏ Р·Р°РїРёСЃСЊ, РєРѕС‚РѕСЂР°СЏ Р±С‹Р»Р° РїСЂРѕС‡РёС‚Р°РЅР°
+    int dummy;                      // РљРѕР»РёС‡РµСЃС‚РІРѕ С…РѕР»РѕСЃС‚С‹С… РїСЂРѕС…РѕРґРѕРІ
+    boolean FlagEndFile;            // Р¤Р»Р°Рі РєРѕРЅС†Р° С„Р°Р№Р»Р°
+    boolean FlagEndRun;             // Р¤Р»Р°Рі РєРѕРЅС†Р° РїСЂРѕС…РѕРґР°
+    boolean valid;                  // РџСЂРёРіРѕРґРЅРѕСЃС‚СЊ Р·Р°РїРёСЃРё
+    int Fibonacci;                        // РРґРµР°Р»СЊРЅРѕРµ С‡РёСЃР»Рѕ Р¤РёР±РѕРЅР°С‡С‡Рё
 } tmpFileType;
 
-static tmpFileType** MassTmpFile;       // Массив данных о временных файлах
-static size_t CountTMPEemFile;          // Количество временных файлов 
-static char* InputFileName;             // Имя входного файла 
-static char* OutputFileName;            // Имя выходного файла 
+static tmpFileType** MassTmpFile;       // РњР°СЃСЃРёРІ РґР°РЅРЅС‹С… Рѕ РІСЂРµРјРµРЅРЅС‹С… С„Р°Р№Р»Р°С…
+static size_t CountTMPEemFile;          // РљРѕР»РёС‡РµСЃС‚РІРѕ РІСЂРµРјРµРЅРЅС‹С… С„Р°Р№Р»РѕРІ 
+static char* InputFileName;             // РРјСЏ РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р° 
+static char* OutputFileName;            // РРјСЏ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р° 
 
-static int level;                       // уровень проходов
-static int NodeCount;                   // количество узлов для дерева выбора 
+static int level;                       // СѓСЂРѕРІРµРЅСЊ РїСЂРѕС…РѕРґРѕРІ
+static int NodeCount;                   // РєРѕР»РёС‡РµСЃС‚РІРѕ СѓР·Р»РѕРІ РґР»СЏ РґРµСЂРµРІР° РІС‹Р±РѕСЂР° 
 
 
-    //внутренний узел
+    //РІРЅСѓС‚СЂРµРЅРЅРёР№ СѓР·РµР»
 typedef struct InternalNode {
-    struct InternalNode* parent;    //Родитель
-    struct ExternalNode* passed;    //Внешний узел
+    struct InternalNode* parent;    //Р РѕРґРёС‚РµР»СЊ
+    struct ExternalNode* passed;    //Р’РЅРµС€РЅРёР№ СѓР·РµР»
 } InternalNodeType;
 
-//внешний узел
+//РІРЅРµС€РЅРёР№ СѓР·РµР»
 typedef struct ExternalNode {
-    struct InternalNode* parent;    //Родитель
-    recType rec;                    //Запись
-    int run;                        //Номер пробега
-    boolean valid;                  //Состояние записи
+    struct InternalNode* parent;    //Р РѕРґРёС‚РµР»СЊ
+    recType rec;                    //Р—Р°РїРёСЃСЊ
+    int run;                        //РќРѕРјРµСЂ РїСЂРѕР±РµРіР°
+    boolean valid;                  //РЎРѕСЃС‚РѕСЏРЅРёРµ Р·Р°РїРёСЃРё
 } ExternalNodeType;
 
-//Узел
+//РЈР·РµР»
 typedef struct Node {
-    InternalNodeType i;            //внутренний узел
-    ExternalNodeType e;            //внешний узел
+    InternalNodeType i;            //РІРЅСѓС‚СЂРµРЅРЅРёР№ СѓР·РµР»
+    ExternalNodeType e;            //РІРЅРµС€РЅРёР№ СѓР·РµР»
 } NodeType;
 
-static NodeType* node;             //Массив узлов
-static ExternalNodeType* win;      //Выбранный узел
-static FILE* Selected;             //Входной файл
-static boolean InputEOF;           //Флаг окончания входного файла
-static int maxRun;                 //Максимальное количество пробегов
-static int curRun;                 //Номер текущего прохода
-InternalNodeType* p;               //Внутренние узлы
-static boolean lastKeyValid;       //Состояние последнего взятого ключа
-static keyType lastKey;            //Состояние записи последнего ключа
+static NodeType* node;             //РњР°СЃСЃРёРІ СѓР·Р»РѕРІ
+static ExternalNodeType* win;      //Р’С‹Р±СЂР°РЅРЅС‹Р№ СѓР·РµР»
+static FILE* Selected;             //Р’С…РѕРґРЅРѕР№ С„Р°Р№Р»
+static boolean InputEOF;           //Р¤Р»Р°Рі РѕРєРѕРЅС‡Р°РЅРёСЏ РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
+static int maxRun;                 //РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕР±РµРіРѕРІ
+static int curRun;                 //РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РїСЂРѕС…РѕРґР°
+InternalNodeType* p;               //Р’РЅСѓС‚СЂРµРЅРЅРёРµ СѓР·Р»С‹
+static boolean lastKeyValid;       //РЎРѕСЃС‚РѕСЏРЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ РІР·СЏС‚РѕРіРѕ РєР»СЋС‡Р°
+static keyType lastKey;            //РЎРѕСЃС‚РѕСЏРЅРёРµ Р·Р°РїРёСЃРё РїРѕСЃР»РµРґРЅРµРіРѕ РєР»СЋС‡Р°
 
-// Функция для освобождения ресурсов
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РѕСЃРІРѕР±РѕР¶РґРµРЅРёСЏ СЂРµСЃСѓСЂСЃРѕРІ
 void DeleteTmpFiles(void)
 {
     if (MassTmpFile) {
-        size_t n = LEN(MassTmpFile);     //Длинна массива файлов
+        size_t n = LEN(MassTmpFile);     //Р”Р»РёРЅРЅР° РјР°СЃСЃРёРІР° С„Р°Р№Р»РѕРІ
         for (size_t i = 0; i < n; i++) {
             if (MassTmpFile[i]) {
                 if (MassTmpFile[i]->FileElem)
@@ -108,15 +108,15 @@ void DeleteTmpFiles(void)
     }
 }
 
-// Функция подготовки к освобождению ресурсов
+// Р¤СѓРЅРєС†РёСЏ РїРѕРґРіРѕС‚РѕРІРєРё Рє РѕСЃРІРѕР±РѕР¶РґРµРЅРёСЋ СЂРµСЃСѓСЂСЃРѕРІ
 void TerminateTmpFiles(int rc)
 {
 
-    //Очистка файла для вывода в него результата
+    //РћС‡РёСЃС‚РєР° С„Р°Р№Р»Р° РґР»СЏ РІС‹РІРѕРґР° РІ РЅРµРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚Р°
     remove(OutputFileName);
 
     if (rc == 0) {
-        //Индекс файла, содержащего результаты
+        //РРЅРґРµРєСЃ С„Р°Р№Р»Р°, СЃРѕРґРµСЂР¶Р°С‰РµРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚С‹
         size_t fileT = CountTMPEemFile - 1;
 
         fclose(MassTmpFile[fileT]->FileElem); MassTmpFile[fileT]->FileElem = NULL;
@@ -132,19 +132,19 @@ void TerminateTmpFiles(int rc)
     DeleteTmpFiles();
 }
 
-//Функция выхода из программы
+//Р¤СѓРЅРєС†РёСЏ РІС‹С…РѕРґР° РёР· РїСЂРѕРіСЂР°РјРјС‹
 void TermProgram(int rc)
 {
     TerminateTmpFiles(rc);
     exit(rc);
 }
 
-// Функция выделения памяти
+// Р¤СѓРЅРєС†РёСЏ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
 void* AllocatedMemory(size_t size) {
-    //Переменная, содержащяя выделенную свободную память
+    //РџРµСЂРµРјРµРЅРЅР°СЏ, СЃРѕРґРµСЂР¶Р°С‰СЏСЏ РІС‹РґРµР»РµРЅРЅСѓСЋ СЃРІРѕР±РѕРґРЅСѓСЋ РїР°РјСЏС‚СЊ
     void* p;
 
-    // Безопасно выделить память и инициализоваться
+    // Р‘РµР·РѕРїР°СЃРЅРѕ РІС‹РґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ Рё РёРЅРёС†РёР°Р»РёР·РѕРІР°С‚СЊСЃСЏ
     if ((p = calloc(1, size)) == NULL) {
         printf("error: malloc failed, size = %d\n", size);
         TermProgram(1);
@@ -152,21 +152,21 @@ void* AllocatedMemory(size_t size) {
     return p;
 }
 
-// Функция инициализации временных файлов значениями
+// Р¤СѓРЅРєС†РёСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РІСЂРµРјРµРЅРЅС‹С… С„Р°Р№Р»РѕРІ Р·РЅР°С‡РµРЅРёСЏРјРё
 void InitValueTmpFiles(void) {
-    // инициализовать файлы для слияния
+    // РёРЅРёС†РёР°Р»РёР·РѕРІР°С‚СЊ С„Р°Р№Р»С‹ РґР»СЏ СЃР»РёСЏРЅРёСЏ
     if (CountTMPEemFile < 3)
     {
         CountTMPEemFile = 3;
     }
 
     MassTmpFile = AllocatedMemory(CountTMPEemFile * sizeof(tmpFileType*));
-    //Переменная, содержащая в себе информацию о файле
+    //РџРµСЂРµРјРµРЅРЅР°СЏ, СЃРѕРґРµСЂР¶Р°С‰Р°СЏ РІ СЃРµР±Рµ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С„Р°Р№Р»Рµ
     tmpFileType* fileInfo = AllocatedMemory(CountTMPEemFile * sizeof(tmpFileType));
 
     for (int i = 0; i < CountTMPEemFile; i++) {
         MassTmpFile[i] = fileInfo + i;
-        //Создание имени временного файла, согласно шаблону
+        //РЎРѕР·РґР°РЅРёРµ РёРјРµРЅРё РІСЂРµРјРµРЅРЅРѕРіРѕ С„Р°Р№Р»Р°, СЃРѕРіР»Р°СЃРЅРѕ С€Р°Р±Р»РѕРЅСѓ
         sprintf(MassTmpFile[i]->FileName, TemplateFileName, i);
 
         if ((MassTmpFile[i]->FileElem = fopen(MassTmpFile[i]->FileName, "w+b")) == NULL) {
@@ -176,10 +176,10 @@ void InitValueTmpFiles(void) {
     }
 }
 
-// Функция чтения записи
+// Р¤СѓРЅРєС†РёСЏ С‡С‚РµРЅРёСЏ Р·Р°РїРёСЃРё
 recType* ReadRecord(void) {
 
-    //Проверка на первый выход
+    //РџСЂРѕРІРµСЂРєР° РЅР° РїРµСЂРІС‹Р№ РІС‹С…РѕРґ
     if (node == NULL) {
 
         if (NodeCount < 2)
@@ -189,7 +189,7 @@ recType* ReadRecord(void) {
 
         node = AllocatedMemory(NodeCount * sizeof(NodeType));
 
-        //Прочитать следующую запись путем выбора с замещением
+        //РџСЂРѕС‡РёС‚Р°С‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ Р·Р°РїРёСЃСЊ РїСѓС‚РµРј РІС‹Р±РѕСЂР° СЃ Р·Р°РјРµС‰РµРЅРёРµРј
         for (int i = 0; i < NodeCount; i++) {
             node[i].i.passed = &node[i].e;
             node[i].i.parent = &node[i / 2].i;
@@ -209,7 +209,7 @@ recType* ReadRecord(void) {
 
     while (true) {
 
-        //заместить предыдущего победителя новой записью
+        //Р·Р°РјРµСЃС‚РёС‚СЊ РїСЂРµРґС‹РґСѓС‰РµРіРѕ РїРѕР±РµРґРёС‚РµР»СЏ РЅРѕРІРѕР№ Р·Р°РїРёСЃСЊСЋ
         if (!InputEOF) {
             if (fread(&win->rec, sizeof(recType), 1, Selected) == 1) {
                 if (
@@ -237,7 +237,7 @@ recType* ReadRecord(void) {
             win->run = maxRun + 1;
         }
 
-        //Отсортировать Родителей выбранного и не выбранного
+        //РћС‚СЃРѕСЂС‚РёСЂРѕРІР°С‚СЊ Р РѕРґРёС‚РµР»РµР№ РІС‹Р±СЂР°РЅРЅРѕРіРѕ Рё РЅРµ РІС‹Р±СЂР°РЅРЅРѕРіРѕ
         p = win->parent;
         do {
             boolean isSwap;
@@ -257,7 +257,7 @@ recType* ReadRecord(void) {
                 }
             }
             if (isSwap) {
-                //p должно иметь статус выбранного
+                //p РґРѕР»Р¶РЅРѕ РёРјРµС‚СЊ СЃС‚Р°С‚СѓСЃ РІС‹Р±СЂР°РЅРЅРѕРіРѕ
                 ExternalNodeType* t;
 
                 t = p->passed;
@@ -267,18 +267,18 @@ recType* ReadRecord(void) {
             p = p->parent;
         } while (p != &node[0].i);
 
-        //Проверка на условие окончания прохода
+        //РџСЂРѕРІРµСЂРєР° РЅР° СѓСЃР»РѕРІРёРµ РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРѕС…РѕРґР°
         if (win->run != curRun) {
             // win->run = curRun + 1
             if (win->run > maxRun) {
-                // конец вывода
+                // РєРѕРЅРµС† РІС‹РІРѕРґР°
                 free(node);
                 return NULL;
             }
             curRun = win->run;
         }
 
-        // вывести верх дерева
+        // РІС‹РІРµСЃС‚Рё РІРµСЂС… РґРµСЂРµРІР°
         if (win->run) {
             lastKey = win->rec.key;
             lastKeyValid = true;
@@ -287,13 +287,13 @@ recType* ReadRecord(void) {
     }
 }
 
-// Функция создания прохода
+// Р¤СѓРЅРєС†РёСЏ СЃРѕР·РґР°РЅРёСЏ РїСЂРѕС…РѕРґР°
 void CreateRuns(void) {
-    recType* win;       //Выбранный
+    recType* win;       //Р’С‹Р±СЂР°РЅРЅС‹Р№
 
-    //Предыдущий файл
+    //РџСЂРµРґС‹РґСѓС‰РёР№ С„Р°Р№Р»
     int fileT = CountTMPEemFile - 1;
-    //Новый файл
+    //РќРѕРІС‹Р№ С„Р°Р№Р»
     int fileP = CountTMPEemFile - 2;
 
     for (int j = 0; j < fileT; j++) {
@@ -317,17 +317,17 @@ void CreateRuns(void) {
             run = false;
             if (MassTmpFile[j]->valid) {
                 if (!cmpLow(win->key, MassTmpFile[j]->rec.key)) {
-                    //Необходимо добавить к существующему пробегу
+                    //РќРµРѕР±С…РѕРґРёРјРѕ РґРѕР±Р°РІРёС‚СЊ Рє СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРјСѓ РїСЂРѕР±РµРіСѓ
                     run = true;
                 }
                 else if (MassTmpFile[j]->dummy) {
-                    //Создать новый проход
+                    //РЎРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ РїСЂРѕС…РѕРґ
                     MassTmpFile[j]->dummy--;
                     run = true;
                 }
             }
             else {
-                //первый проход в файле
+                //РїРµСЂРІС‹Р№ РїСЂРѕС…РѕРґ РІ С„Р°Р№Р»Рµ
                 MassTmpFile[j]->dummy--;
                 run = true;
             }
@@ -335,7 +335,7 @@ void CreateRuns(void) {
             if (run) {
                 anyrun = true;
 
-                //полный проход
+                //РїРѕР»РЅС‹Р№ РїСЂРѕС…РѕРґ
                 while (true) {
                     if (fwrite(win, sizeof(recType), 1, MassTmpFile[j]->FileElem) != 1) {
                         perror("io3");
@@ -353,7 +353,7 @@ void CreateRuns(void) {
             }
         }
 
-        //Если закончилось место для проходов - вверх на уровень
+        //Р•СЃР»Рё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ РјРµСЃС‚Рѕ РґР»СЏ РїСЂРѕС…РѕРґРѕРІ - РІРІРµСЂС… РЅР° СѓСЂРѕРІРµРЅСЊ
         if (!anyrun) {
             level++;
             int t = MassTmpFile[0]->Fibonacci;
@@ -365,9 +365,9 @@ void CreateRuns(void) {
     }
 }
 
-// Функция обновления состояний массива файлов
+// Р¤СѓРЅРєС†РёСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ РјР°СЃСЃРёРІР° С„Р°Р№Р»РѕРІ
 void RefreshFlag(int j) {
-    //Идти в начало file[j] и читать первую запись
+    //РРґС‚Рё РІ РЅР°С‡Р°Р»Рѕ file[j] Рё С‡РёС‚Р°С‚СЊ РїРµСЂРІСѓСЋ Р·Р°РїРёСЃСЊ
     MassTmpFile[j]->FlagEndRun = false;
     MassTmpFile[j]->FlagEndFile = false;
     rewind(MassTmpFile[j]->FileElem);
@@ -383,23 +383,23 @@ void RefreshFlag(int j) {
     }
 }
 
-// Функция организации сортировки слиянием
+// Р¤СѓРЅРєС†РёСЏ РѕСЂРіР°РЅРёР·Р°С†РёРё СЃРѕСЂС‚РёСЂРѕРІРєРё СЃР»РёСЏРЅРёРµРј
 void MultiphaseMergeSort(void) {
     int fileT = CountTMPEemFile - 1;
     int fileP = CountTMPEemFile - 2;
 
-    //Заполняем массив информацией
+    //Р—Р°РїРѕР»РЅСЏРµРј РјР°СЃСЃРёРІ РёРЅС„РѕСЂРјР°С†РёРµР№
     for (int j = 0; j < fileT; j++)
     {
         RefreshFlag(j);
     }
 
-    //Слияние проходов
+    //РЎР»РёСЏРЅРёРµ РїСЂРѕС…РѕРґРѕРІ
     while (level)
     {
         while (true)
         {
-            //Проверка на предмет проходов
+            //РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРµРґРјРµС‚ РїСЂРѕС…РѕРґРѕРІ
             boolean allDummies = true;
             boolean anyRuns = false;
             for (int j = 0; j <= fileP; j++) {
@@ -411,7 +411,7 @@ void MultiphaseMergeSort(void) {
 
             if (anyRuns) {
 
-                //Сливаем один проход
+                //РЎР»РёРІР°РµРј РѕРґРёРЅ РїСЂРѕС…РѕРґ
                 while (true) {
                     int k = -1;
                     for (int j = 0; j <= fileP; j++) {
@@ -429,18 +429,18 @@ void MultiphaseMergeSort(void) {
                         break;
                     }
 
-                    //Занесение записи в file[fileT]
+                    //Р—Р°РЅРµСЃРµРЅРёРµ Р·Р°РїРёСЃРё РІ file[fileT]
                     if (fwrite(&MassTmpFile[k]->rec, sizeof(recType), 1,
                         MassTmpFile[fileT]->FileElem) != 1) {
                         perror("io6");
                         TermProgram(1);
                     }
 
-                    //Заменить запись
+                    //Р—Р°РјРµРЅРёС‚СЊ Р·Р°РїРёСЃСЊ
                     keyType lastKey = MassTmpFile[k]->rec.key;
                     if (fread(&MassTmpFile[k]->rec, sizeof(recType), 1,
                         MassTmpFile[k]->FileElem) == 1) {
-                        //Проверка на концец пробега
+                        //РџСЂРѕРІРµСЂРєР° РЅР° РєРѕРЅС†РµС† РїСЂРѕР±РµРіР°
                         if (cmpLow(MassTmpFile[k]->rec.key, lastKey))
                         {
                             MassTmpFile[k]->FlagEndRun = true;
@@ -456,7 +456,7 @@ void MultiphaseMergeSort(void) {
                     }
                 }
 
-                //Изменения, связанные с холостыми проходами
+                //РР·РјРµРЅРµРЅРёСЏ, СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ С…РѕР»РѕСЃС‚С‹РјРё РїСЂРѕС…РѕРґР°РјРё
                 for (int j = 0; j <= fileP; j++) {
                     if (MassTmpFile[j]->dummy)
                     {
@@ -477,7 +477,7 @@ void MultiphaseMergeSort(void) {
                 MassTmpFile[fileT]->dummy++;
             }
 
-            //конец прохода
+            //РєРѕРЅРµС† РїСЂРѕС…РѕРґР°
             if (MassTmpFile[fileP]->FlagEndFile && !MassTmpFile[fileP]->dummy)
             {
                 level--;
@@ -502,7 +502,7 @@ void MultiphaseMergeSort(void) {
                 memmove(MassTmpFile + 1, MassTmpFile, fileT * sizeof(tmpFileType*));
                 MassTmpFile[0] = TempFile;
 
-                //начать новые проходы
+                //РЅР°С‡Р°С‚СЊ РЅРѕРІС‹Рµ РїСЂРѕС…РѕРґС‹
                 for (int j = 0; j <= fileP; j++)
                 {
                     if (!MassTmpFile[j]->FlagEndFile)
@@ -515,7 +515,7 @@ void MultiphaseMergeSort(void) {
     }
 }
 
-// Функция инициализации начальных значений программы
+// Р¤СѓРЅРєС†РёСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РЅР°С‡Р°Р»СЊРЅС‹С… Р·РЅР°С‡РµРЅРёР№ РїСЂРѕРіСЂР°РјРјС‹
 void InitProgram(void)
 {
     InputFileName = "input.txt";
@@ -524,7 +524,7 @@ void InitProgram(void)
     NodeCount = 2000;
 }
 
-// Функция, генерирующая случайные данные
+// Р¤СѓРЅРєС†РёСЏ, РіРµРЅРµСЂРёСЂСѓСЋС‰Р°СЏ СЃР»СѓС‡Р°Р№РЅС‹Рµ РґР°РЅРЅС‹Рµ
 void MakeRandom(recType* data, long N) {
     for (long int i = 0; i < N; i++)
     {
@@ -532,7 +532,7 @@ void MakeRandom(recType* data, long N) {
     }
 }
 
-// Функция, создающая файл с случайными числами
+// Р¤СѓРЅРєС†РёСЏ, СЃРѕР·РґР°СЋС‰Р°СЏ С„Р°Р№Р» СЃ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё
 void CreateRandomInput(void)
 {
     recType d[CountElem];
@@ -547,7 +547,7 @@ void CreateRandomInput(void)
     fclose(f);
 }
 
-//Функция, выводящая в консоль результат работы алгоритма
+//Р¤СѓРЅРєС†РёСЏ, РІС‹РІРѕРґСЏС‰Р°СЏ РІ РєРѕРЅСЃРѕР»СЊ СЂРµР·СѓР»СЊС‚Р°С‚ СЂР°Р±РѕС‚С‹ Р°Р»РіРѕСЂРёС‚РјР°
 void CreateOutput(void)
 {
     recType d[CountElem];
@@ -561,7 +561,7 @@ void CreateOutput(void)
     fclose(f);
 }
 
-// Функция организации работы программы
+// Р¤СѓРЅРєС†РёСЏ РѕСЂРіР°РЅРёР·Р°С†РёРё СЂР°Р±РѕС‚С‹ РїСЂРѕРіСЂР°РјРјС‹
 void RunSort(void) {
     InitProgram();
     CreateRandomInput();
